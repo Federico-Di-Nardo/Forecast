@@ -1,0 +1,331 @@
+-- phpMyAdmin SQL Dump
+-- version 5.0.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Sep 30, 2020 at 01:41 AM
+-- Server version: 10.4.14-MariaDB
+-- PHP Version: 7.4.9
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `forecast`
+--
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addAlarm` (IN `driverID` INT, IN `timeSlotID` INT, IN `date` DATE, IN `amountOfAlarms` INT)  NO SQL
+INSERT INTO `alarms` (`DriverID`, `TimeSlotID`, `Date`, `AmountOfAlarms`) 
+VALUES (driverID, timeSlotID, date , amountOfAlarms)$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addDriverData` (IN `lastName` VARCHAR(40), IN `firstName` VARCHAR(40), IN `dateOfBirth` DATE, IN `gender` INT)  NO SQL
+INSERT INTO `driver` (`DriverID`, `LastName`, `FirstName`, `DateOfBirth`, `GenderID`) 
+VALUES (NULL, lastName, firstName , dateOfBirth , gender)$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `returnAlarmData` (IN `highestAlarm` INT)  NO SQL
+SELECT driver.DriverID
+	, driver.GenderID
+	, DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(driver.DateOfBirth, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(driver.DateOfBirth, '00-%m-%d')) AS age
+    , alarms.TimeSlotID
+    , alarms.AmountOfAlarms/highestAlarm
+FROM driver, alarms 
+WHERE driver.DriverID = alarms.DriverID$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `returnHighestAlarm` (OUT `returnValue` INT)  NO SQL
+SET returnValue = (
+    SELECT alarms.AmountOfAlarms
+    FROM alarms 
+    ORDER By alarms.AmountOfAlarms DESC 
+    LIMIT 1
+)$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `returnID` (OUT `returnValue` INT, IN `lastName` VARCHAR(40), IN `firstName` VARCHAR(40), IN `dateOfBirth` DATE, IN `genderID` INT)  NO SQL
+SET returnValue = (
+	SELECT DriverID FROM driver
+    WHERE driver.LastName=lastName
+    AND driver.FirstName=firstName
+    AND driver.DateOfBirth=dateOfBirth
+    AND driver.GenderID=genderID
+    ORDER BY DriverID DESC
+    LIMIT 1
+)$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `returnTrainingDiff` (OUT `returnValue` INT)  NO SQL
+SET returnValue=(
+	SELECT COUNT(alarms.DriverID) - parameters.TrainingFrequency -  	parameters.LastTraining as trainingDiff
+	FROM parameters, alarms
+   )$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDriverData` (IN `driverID` INT, IN `lastName` VARCHAR(40), IN `firstName` VARCHAR(40), IN `dateOfBirth` DATE, IN `genderID` INT)  NO SQL
+UPDATE driver 
+SET driver.LastName = lastName
+, driver.FirstName = firstName 
+, driver.DateOfBirth = dateOfBirth
+, driver.GenderID = genderID
+WHERE driver.DriverID = driverID$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateLastTraining` (IN `lastTraining` INT)  NO SQL
+UPDATE parameters 
+SET parameters.LastTraining = parameters.TrainingFrequency + parameters.LastTraining + lastTraining$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `alarms`
+--
+
+CREATE TABLE `alarms` (
+  `DriverID` int(11) NOT NULL,
+  `TimeSlotID` int(11) NOT NULL,
+  `Date` date NOT NULL,
+  `AmountOfAlarms` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `alarms`
+--
+
+INSERT INTO `alarms` (`DriverID`, `TimeSlotID`, `Date`, `AmountOfAlarms`) VALUES
+(70, 1, '2020-09-01', 8),
+(70, 1, '2020-09-02', 10),
+(70, 2, '2020-09-01', 6),
+(70, 2, '2020-09-02', 7),
+(70, 3, '2020-09-01', 16),
+(70, 3, '2020-09-02', 20),
+(71, 1, '2020-09-01', 6),
+(71, 1, '2020-09-02', 5),
+(71, 2, '2020-09-01', 4),
+(71, 2, '2020-09-02', 4),
+(71, 3, '2020-09-01', 9),
+(71, 3, '2020-09-02', 10),
+(72, 1, '2020-09-01', 2),
+(72, 1, '2020-09-02', 3),
+(72, 2, '2020-09-01', 1),
+(72, 2, '2020-09-02', 2),
+(72, 3, '2020-09-01', 4),
+(72, 3, '2020-09-02', 5),
+(73, 1, '2020-09-01', 4),
+(73, 1, '2020-09-02', 5),
+(73, 2, '2020-09-01', 3),
+(73, 2, '2020-09-02', 4),
+(73, 3, '2020-09-01', 7),
+(73, 3, '2020-09-02', 10),
+(74, 1, '2020-09-01', 3),
+(74, 1, '2020-09-02', 3),
+(74, 2, '2020-09-01', 2),
+(74, 2, '2020-09-02', 2),
+(74, 3, '2020-09-01', 5),
+(74, 3, '2020-09-02', 5),
+(75, 1, '2020-09-01', 1),
+(75, 1, '2020-09-02', 2),
+(75, 2, '2020-09-01', 1),
+(75, 2, '2020-09-02', 1),
+(75, 3, '2020-09-01', 2),
+(75, 3, '2020-09-02', 3),
+(76, 1, '2020-09-01', 6),
+(76, 1, '2020-09-02', 7),
+(76, 2, '2020-09-01', 4),
+(76, 2, '2020-09-02', 6),
+(76, 3, '2020-09-01', 10),
+(76, 3, '2020-09-02', 15),
+(77, 1, '2020-09-01', 4),
+(77, 1, '2020-09-02', 5),
+(77, 2, '2020-09-01', 3),
+(77, 2, '2020-09-02', 4),
+(77, 3, '2020-09-01', 7),
+(77, 3, '2020-09-02', 7),
+(78, 1, '2020-09-01', 1),
+(78, 1, '2020-09-02', 3),
+(78, 2, '2020-09-01', 1),
+(78, 2, '2020-09-02', 2),
+(78, 3, '2020-09-01', 3),
+(78, 3, '2020-09-02', 4),
+(83, 1, '2020-09-18', 0),
+(83, 2, '2020-09-18', 10),
+(83, 3, '2020-09-18', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `driver`
+--
+
+CREATE TABLE `driver` (
+  `DriverID` int(11) NOT NULL,
+  `LastName` varchar(40) NOT NULL,
+  `FirstName` varchar(40) NOT NULL,
+  `DateOfBirth` date NOT NULL,
+  `GenderID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `driver`
+--
+
+INSERT INTO `driver` (`DriverID`, `LastName`, `FirstName`, `DateOfBirth`, `GenderID`) VALUES
+(70, 'Apellido', 'Nombre', '2002-09-02', 1),
+(71, 'Apellido', 'Nombre', '1980-09-02', 1),
+(72, 'Apellido', 'Nombre', '1935-09-02', 1),
+(73, 'Apellido', 'Nombre', '2002-09-02', 2),
+(74, 'Apellido', 'Nombre', '1980-09-02', 2),
+(75, 'Apellido', 'Nombre', '1935-09-02', 2),
+(76, 'Apellido', 'Nombre', '2002-09-02', 3),
+(77, 'Apellido', 'Nombre', '1980-09-02', 3),
+(78, 'Apellido', 'Nombre', '1935-09-02', 3),
+(80, 'Di Nardo', 'Federico', '2002-09-09', 1),
+(81, 'Chaves', 'Alejo', '2002-10-31', 1),
+(83, 'Di Nardo', 'Fede', '2002-09-09', 1),
+(84, 'Linares', 'Pablo ', '1973-09-18', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gender`
+--
+
+CREATE TABLE `gender` (
+  `GenderID` int(11) NOT NULL,
+  `Description` varchar(20) NOT NULL COMMENT 'Gender description'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `gender`
+--
+
+INSERT INTO `gender` (`GenderID`, `Description`) VALUES
+(1, 'Masculino'),
+(2, 'Femenino'),
+(3, 'Otro');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parameters`
+--
+
+CREATE TABLE `parameters` (
+  `TrainingFrequency` int(11) NOT NULL,
+  `LastTraining` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `parameters`
+--
+
+INSERT INTO `parameters` (`TrainingFrequency`, `LastTraining`) VALUES
+(50, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `timeslots`
+--
+
+CREATE TABLE `timeslots` (
+  `TimeSlotsID` int(11) NOT NULL,
+  `Description` varchar(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `timeslots`
+--
+
+INSERT INTO `timeslots` (`TimeSlotsID`, `Description`) VALUES
+(1, '06:00-14:00'),
+(2, '14:00-22:00'),
+(3, '22:00-06:00');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `alarms`
+--
+ALTER TABLE `alarms`
+  ADD PRIMARY KEY (`DriverID`,`TimeSlotID`,`Date`),
+  ADD KEY `TimeSlotIs_FK` (`TimeSlotID`),
+  ADD KEY `DriverID_FK` (`DriverID`);
+
+--
+-- Indexes for table `driver`
+--
+ALTER TABLE `driver`
+  ADD PRIMARY KEY (`DriverID`),
+  ADD KEY `GenderID_constraint` (`GenderID`);
+
+--
+-- Indexes for table `gender`
+--
+ALTER TABLE `gender`
+  ADD PRIMARY KEY (`GenderID`);
+
+--
+-- Indexes for table `parameters`
+--
+ALTER TABLE `parameters`
+  ADD UNIQUE KEY `TrainingFrequency` (`TrainingFrequency`),
+  ADD UNIQUE KEY `LastTraining` (`LastTraining`);
+
+--
+-- Indexes for table `timeslots`
+--
+ALTER TABLE `timeslots`
+  ADD PRIMARY KEY (`TimeSlotsID`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `driver`
+--
+ALTER TABLE `driver`
+  MODIFY `DriverID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+
+--
+-- AUTO_INCREMENT for table `gender`
+--
+ALTER TABLE `gender`
+  MODIFY `GenderID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `timeslots`
+--
+ALTER TABLE `timeslots`
+  MODIFY `TimeSlotsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `alarms`
+--
+ALTER TABLE `alarms`
+  ADD CONSTRAINT `DriverID_FK` FOREIGN KEY (`DriverID`) REFERENCES `driver` (`DriverID`),
+  ADD CONSTRAINT `TimeSlotIs_FK` FOREIGN KEY (`TimeSlotID`) REFERENCES `timeslots` (`TimeSlotsID`);
+
+--
+-- Constraints for table `driver`
+--
+ALTER TABLE `driver`
+  ADD CONSTRAINT `GenderID_constraint` FOREIGN KEY (`GenderID`) REFERENCES `gender` (`GenderID`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

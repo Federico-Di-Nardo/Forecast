@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/popupFirstName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:autoText="false"
+        android:ems="10"
+        android:hint="Nombre"
+        android:inputType="textPersonName"
+        android:text=""
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/popupLastName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:ems="10"
+        android:hint="Apellido"
+        android:inputType="textPersonName"
+        android:text=""
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="@+id/popupFirstName"
+        app:layout_constraintTop_toBottomOf="@+id/popupFirstName" />
+
+    <Button
+        android:id="@+id/popupConfirm"
+        android:layout_width="130dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/button"
+        android:text="Confirmar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.836"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/popupGender" />
+
+    <Button
+        android:id="@+id/popupCancel"
+        android:layout_width="130dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/button"
+        android:text="Cancelar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.17"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/popupGender" />
+
+    <Spinner
+        android:id="@+id/popupGender"
+        android:layout_width="194dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="44dp"
+        android:entries="@array/spinnerItems"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/popupBirth" />
+
+    <TextView
+        android:id="@+id/popupBirth"
+        android:layout_width="195dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="44dp"
+        android:drawableLeft="@android:drawable/ic_menu_day"
+        android:text="Fecha de nacimiento"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/popupLastName" />
+
+    <Switch
+        android:id="@+id/switch2"
+        android:layout_width="17dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="20dp"
+        android:text="Switch"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/popupCancel"
+        app:layout_constraintTop_toBottomOf="@+id/popupCancel" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

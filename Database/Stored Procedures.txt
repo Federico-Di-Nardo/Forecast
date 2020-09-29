@@ -1,0 +1,111 @@
+DRIVERS' INSERTION PROCEDURE
+
+CREATE PROCEDURE `addAlarm`(
+	IN `driverID` INT
+	, IN `timeSlotID` INT
+	, IN `date` DATE
+	, IN `amountOfAlarms` INT) 
+INSERT INTO `alarms` (`DriverID`, `TimeSlotID`, `Date`, `AmountOfAlarms`) 
+VALUES (driverID, timeSlotID, date , amountOfAlarms)
+
+
+
+
+DRIVERS' UPDATE PROCEDURE
+
+CREATE PROCEDURE `updateDriverData`(
+	IN `driverID` INT
+	, IN `lastName` VARCHAR(40)
+	, IN `firstName` VARCHAR(40)
+	, IN `dateOfBirth` DATE
+	, IN `genderID` INT) 
+UPDATE driver 
+	SET driver.LastName = lastName 
+	, driver.FirstName = firstName 
+	, driver.DateOfBirth = dateOfBirth 
+	, driver.GenderID = genderID 
+WHERE driver.DriverID = driverID
+
+
+
+
+RETURN DRIVER'S ID PROCEDURE
+
+CREATE PROCEDURE `returnID`(
+	OUT `returnValue` INT
+	, IN `lastName` VARCHAR(40)
+	, IN `firstName` VARCHAR(40)
+	, IN `dateOfBirth` DATE
+	, IN `genderID` INT)
+SET returnValue = ( 
+	SELECT DriverID 
+	FROM driver 
+	WHERE driver.LastName=lastName 
+	AND driver.FirstName=firstName
+	AND driver.DateOfBirth=dateOfBirth 
+	AND driver.GenderID=genderID 
+	ORDER BY DriverID DESC 
+	LIMIT 1 )	
+
+
+
+
+ALARM INSERT PROCEDURE
+
+CREATE PROCEDURE `addAlarm`(
+	IN `driverID` INT
+	, IN `timeSlotID` INT
+	, IN `date` DATE
+	, IN `amountOfAlarms` INT)
+ INSERT INTO `alarms` (`DriverID`, `TimeSlotID`, `Date`, `AmountOfAlarms`)
+VALUES (driverID, timeSlotID, date , amountOfAlarms)
+
+
+
+
+GET HIGHEST AMOUNTS OF ALARMS FROM ALARMS PROCEDURE
+
+CREATE PROCEDURE `returnHighestAlarm`(
+	OUT `returnValue` INT)
+SET returnValue = ( 
+	SELECT alarms.AmountOfAlarms 
+	FROM alarms 
+	ORDER By alarms.AmountOfAlarms DESC 
+	LIMIT 1 )
+
+
+
+
+GET ID, GENDER (id), AGE (calculated using date of birth), TIMESLOT (id), AMOUNT OF ALARMS DIVIDED BY HIGHEST ALARM (as parameter to always have values lower than 1)
+
+CREATE PROCEDURE `returnAlarmData`(
+	IN `highestAlarm` INT)
+SELECT driver.DriverID 
+	, driver.GenderID 
+	, DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(driver.DateOfBirth, '%Y') - (DATE_FORMAT(NOW(), '00-	%m-%d') < DATE_FORMAT(driver.DateOfBirth, '00-%m-%d')) AS age 
+	, alarms.TimeSlotID 
+	, alarms.AmountOfAlarms/highestAlarm 
+FROM driver
+	, alarms 
+WHERE driver.DriverID = alarms.DriverID
+
+
+
+
+PROCEDURE THAT RETURNS THE DIFFERENCE BETWEEN THE AMOUNT OF NEW ALARMS AND THE AMOUNT OF ALARMS REQUIRED FOR A TRAINING
+
+CREATE PROCEDURE `returnTrainingDiff`(
+	OUT `returnValue` INT) 
+SET returnValue=( 
+	SELECT COUNT(alarms.DriverID) - parameters.TrainingFrequency - parameters.LastTraining as trainingDiff 
+	FROM parameters, alarms )
+
+
+
+
+PROCEDURE THAT UPDATES THE PARAMETER TABLE AFTER TRAINING THE NEURAL NETWORK WITH THE NEW AMOUNT OF ALARMS NEEDED
+
+CREATE PROCEDURE `updateLastTraining`(
+	IN `lastTraining` INT) 
+UPDATE parameters 
+SET parameters.LastTraining = parameters.TrainingFrequency + parameters.LastTraining + lastTraining

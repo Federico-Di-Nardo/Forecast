@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OpenCVTest</string>
+    <string name="faces_detects">FACES DETECTED: %d</string>
+</resources>
