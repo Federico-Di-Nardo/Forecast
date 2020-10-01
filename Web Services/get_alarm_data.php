@@ -33,12 +33,13 @@ $con = $connection;
 	while ($result2 = mysqli_fetch_assoc($resultado2)) {
 		if ($result2['age'] <31 ){
 		$result2['age'] = 1;
-	}
-	if ($result2['age'] <61 && $result2['age'] > 30){
-		$result2['age'] = 2;
-	}
-	if ($result2['age'] >60){
-		$result2['age'] = 3;
+		}
+		if ($result2['age'] <61 && $result2['age'] > 30){
+			$result2['age'] = 2;
+		}
+		if ($result2['age'] >60){
+			$result2['age'] = 3;
+		}
 	}
 	$resultstring2 = $result2['GenderID'] .",". $result2['age'] .",". $result2['TimeSlotID'] .",". $result2['alarms.AmountOfAlarms/highestAlarm']."+";
 	
